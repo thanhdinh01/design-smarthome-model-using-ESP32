@@ -15,8 +15,6 @@ Servo myServo;
 #define BLYNK_TEMPLATE_ID "TMPL6ParGzkaX"
 #define BLYNK_TEMPLATE_NAME "ĐATN"
 #define BLYNK_AUTH_TOKEN "E7ykdJuXYwaAQTaw-wUq4Oj4Z8AhY1xh"
-//char ssid[] = "TP-Link_46A4";
-//char pass[] = "63728705";
 char ssid[] = "BEAUTIFUL";
 char pass[] = "123456777";
 char auth[] = BLYNK_AUTH_TOKEN;
