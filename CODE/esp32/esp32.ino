@@ -6,11 +6,11 @@
 #include <WiFiClient.h>
 #include <BlynkSimpleEsp32.h>
 #include <ESP32Servo.h>
-#include <DHT.h>
+#include<DHT.h>
 const int DHTPin = 25;
 DHT dht(DHTPin, DHT22);
 Servo myServo;
-#define ServoPin 4  //D4
+#define ServoPin 4//D4
 
 #define BLYNK_TEMPLATE_ID "TMPL6ParGzkaX"
 #define BLYNK_TEMPLATE_NAME "ĐATN"
@@ -22,29 +22,29 @@ char pass[] = "123456777";
 char auth[] = BLYNK_AUTH_TOKEN;
 LiquidCrystal_I2C lcd(0x27, 20, 4);
 
-int led1 = 16;  //D16
+int led1 = 16;//D16
 int led2 = 17;
 
 #define RST_PIN 2
 #define SS_PIN 5
 
 byte readCard[4];
-//String MasterTag = "C11CEE1D";
-String MasterTag = "CB52952F";  // REPLACE this Tag ID with your Tag ID!!!
+//String MasterTag = "C11CEE1D"; 
+String MasterTag = "CB52952F"; // REPLACE this Tag ID with your Tag ID!!!
 String tagID = "";
 
 // Create instances
 MFRC522 mfrc522(SS_PIN, RST_PIN);
 
-int khigas, doamdat1, doamdat2;
+int khigas,doamdat1,doamdat2;
 float temp;
-#define button1 1    // chân D18
-#define button2 3    // chân D19
-#define thietbi1 27  //15 // chân D15//ngat
-#define thietbi2 32  //2 // chân D2 //ngat
-#define thietbi3 33
-#define thietbi4 13
-#define thietbi5 14
+#define button1 1// chân D18
+#define button2 3// chân D19
+#define thietbi1  27//15 // chân D15//ngat
+#define thietbi2  32//2 // chân D2 //ngat
+#define thietbi3  33
+#define thietbi4  13
+#define thietbi5  14
 boolean bt1_state = HIGH;
 boolean bt2_state = HIGH;
 String status1;
@@ -55,12 +55,14 @@ int st2;
 unsigned long time1 = 0;
 unsigned long time2 = 0;
 //unsigned long time3 = 0;
-BLYNK_WRITE(V3) {
+BLYNK_WRITE(V3)
+{
   int p = param.asInt();
 
   digitalWrite(thietbi1, p);
 }
-BLYNK_WRITE(V4) {
+BLYNK_WRITE(V4)
+{
   int p1 = param.asInt();
 
   digitalWrite(thietbi2, p1);
@@ -101,17 +103,19 @@ void setup() {
 void loop() {
   Blynk.run();
 
-  if ((unsigned long)(millis() - time1) > 1000) {
-    RFID();
-    time1 = millis();
-  }
-  bt();
-  if ((unsigned long)(millis() - time2) > 2000) {
-    cambien();
-    time2 = millis();
-  }
+  if ( (unsigned long) (millis() - time1) > 1000 )
+    {
+      RFID();
+      time1=millis();
+    }
+    bt();
+  if ( (unsigned long) (millis() - time2) > 2000 )
+    {
+      cambien();
+      time2=millis();
+    }
   //RFID();
-  //bt();
+  //bt(); 
   hienthi();
   //cambien();
   //delay(1000);
@@ -136,12 +140,16 @@ boolean getID() {
   return true;
 }
 void RFID() {
-  while (getID()) {
-    if (tagID == MasterTag) {
+  while (getID()) 
+  {
+    if (tagID == MasterTag) 
+    {
       digitalWrite(led1, HIGH);
-      myServo.write(100);
+      myServo.write(100);      
       digitalWrite(led2, LOW);
-    } else {
+    } 
+    else 
+    {
       digitalWrite(led2, HIGH);
       digitalWrite(led1, LOW);
     }
@@ -153,96 +161,105 @@ void RFID() {
   }
 }
 
-void cambien() {
+void cambien()
+{
   //khi gas
   analogReadResolution(10);
   khigas = analogRead(A0);
-  if (khigas > 200)
-    digitalWrite(thietbi5, HIGH);
+  if(khigas>200)
+      digitalWrite(thietbi5, HIGH);
   else
-    digitalWrite(thietbi5, LOW);
-  Blynk.virtualWrite(V2, khigas);
+      digitalWrite(thietbi5, LOW);
+  Blynk.virtualWrite(V2,khigas);
 
   //dht22
   temp = dht.readTemperature();
-  if (temp > 30)
-    digitalWrite(thietbi4, HIGH);
+  if(temp>30)
+      digitalWrite(thietbi4, HIGH);
   else
-    digitalWrite(thietbi4, LOW);
-  Blynk.virtualWrite(V0, temp);
+      digitalWrite(thietbi4, LOW);
+  Blynk.virtualWrite(V0,temp);
 
   //do am dat
-  doamdat1 = analogRead(A3);  // đọc giá trị độ ẩm đất từ cảm biến
+  doamdat1 = analogRead(A3); // đọc giá trị độ ẩm đất từ cảm biến
   doamdat2 = map(doamdat1, 0, 1023, 100, 0);
-  if (doamdat2 <= 10)
-    digitalWrite(thietbi3, HIGH);
-  if (doamdat2 >= 30)
-    digitalWrite(thietbi3, LOW);
-  Blynk.virtualWrite(V1, doamdat2);
+  if(doamdat2<=10)
+      digitalWrite(thietbi3, HIGH);
+  if(doamdat2>=30)
+      digitalWrite(thietbi3, LOW);
+  Blynk.virtualWrite(V1,doamdat2);
   Blynk.virtualWrite(V5, digitalRead(thietbi3));
   Blynk.virtualWrite(V6, digitalRead(thietbi4));
   Blynk.virtualWrite(V7, digitalRead(thietbi5));
 }
 
-void bt() {
-  if (digitalRead(button1) == LOW)  //1
+void bt()
+{
+  if (digitalRead(button1) == LOW)//1
   {
-    if (bt1_state == HIGH) {
+    if (bt1_state == HIGH)
+    {
       digitalWrite(thietbi1, !digitalRead(thietbi1));
       Blynk.virtualWrite(V3, digitalRead(thietbi1));
       bt1_state = LOW;
     }
-  } else
+  }
+  else
     bt1_state = HIGH;
 
-  st1 = digitalRead(thietbi1);
-  if (st1 == 1)
-    status1 = "ON ";
-  else
-    status1 = "OFF";
+  st1=digitalRead(thietbi1);
+    if(st1==1)
+      status1="ON ";
+    else
+      status1="OFF";
 
-  if (digitalRead(button2) == LOW)  //2
+  if (digitalRead(button2) == LOW)//2
   {
-    if (bt2_state == HIGH) {
+    if (bt2_state == HIGH)
+    {
       digitalWrite(thietbi2, !digitalRead(thietbi2));
       Blynk.virtualWrite(V4, digitalRead(thietbi2));
       bt2_state = LOW;
     }
-  } else
+  }
+  else
     bt2_state = HIGH;
 
-  st2 = digitalRead(thietbi2);
-  if (st2 == 1)
-    status2 = "ON ";
-  else
-    status2 = "OFF";
+  st2=digitalRead(thietbi2);
+    if(st2==1)
+      status2="ON ";
+    else
+      status2="OFF";
 }
 
-void hienthi() {
-  lcd.setCursor(0, 0);
-  lcd.print("DO AM DAT: ");
-  lcd.setCursor(11, 0);
-  lcd.print(doamdat2);
-  lcd.print("%  ");
+void hienthi()
+{
+    lcd.setCursor(0, 0); 
+    lcd.print("DO AM DAT: ");
+    lcd.setCursor(11, 0);
+    lcd.print(doamdat2);
+    lcd.print("%  "); 
 
-  lcd.setCursor(0, 1);
-  lcd.print("NHIET DO: ");
-  lcd.print(temp);
-  lcd.write(2);
-  lcd.print("C  ");
+    lcd.setCursor(0,1);
+    lcd.print("NHIET DO: ");
+    lcd.print(temp);
+    lcd.write(2);
+    lcd.print("C  ");
+  
+    lcd.setCursor(0,2);
+    lcd.print("CO Co2: ");
+    lcd.print(khigas);
+    lcd.print("PPM   ");
 
-  lcd.setCursor(0, 2);
-  lcd.print("CO Co2: ");
-  lcd.print(khigas);
-  lcd.print("PPM   ");
+    lcd.setCursor(0,3);
+    lcd.print("TB1:");
+    lcd.setCursor(5,3);
+    lcd.print(status1);
 
-  lcd.setCursor(0, 3);
-  lcd.print("TB1:");
-  lcd.setCursor(5, 3);
-  lcd.print(status1);
-
-  lcd.setCursor(10, 3);
-  lcd.print("TB2:");
-  lcd.setCursor(15, 3);
-  lcd.print(status2);
+    lcd.setCursor(10,3);
+    lcd.print("TB2:");
+    lcd.setCursor(15,3);
+    lcd.print(status2);
 }
+
+
